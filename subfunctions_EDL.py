@@ -115,23 +115,21 @@ def F_drag_descent(edl_system,planet,altitude,velocity):
         ACd_parachute = np.pi*(edl_system['parachute']['diameter']/2.0)**2*edl_system['parachute']['Cd']
     else:
         ACd_parachute = 0.0
-#edit start
-    mach=v2M_Mars(velocity, altitude)
-    cmod=0
-    if mach < .7:
-        cmod=1
-    elif mach < .95:
-        cmod=-1*3.3015*mach**2+4.1334*mach-.3006
-    
-    elif mach < 1.8:
-        cmod=-1.2048*mach**2+3.541*mach-1.582
-       
+        
+    M = v2M_Mars(velocity, altitude) # gets the mach number
+    c_mod = 0 # initializes c_mod
+
+    if M <= 0.65:
+        c_mod = 1.0
+    elif M <= 0.95:
+        c_mod = -1.3085 * M + 1.9108
+    elif M <= 1.8:
+        c_mod = -1.0528*M**2 + 3.0891 * M - 1.2537
     else:
-        cmod=-.3562*mach+1.5369
+        c_mod = -0.3392 * M + 1.4959
        
     # This computes the ultimate drag force
-    F=rhov2*(ACd_body+ACd_parachute)*cmod
-#edit end
+    F=rhov2*(ACd_body+ACd_parachute)*c_mod
     return F
 
 def F_gravity_descent(edl_system,planet):
