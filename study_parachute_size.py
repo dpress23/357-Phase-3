@@ -59,14 +59,14 @@ plt.suptitle('EDL Run Performance Over Varying Parachute Sizes',fontsize=16, fon
 plt.subplot(3, 1, 1)
 plt.xlabel('Diameter (m)')
 plt.ylabel('Time (s)')
-plt.title('Parachute Diameter vs Time')
+plt.title('Parachute Diameter vs Run Time')
 plt.plot(diameter_parachute, time_f, linestyle='--', marker='.',)
 
-# Parachute Diameter vs Touchdown Speed'
+# Parachute Diameter vs Touchdown Velocity'
 plt.subplot(3, 1, 2)
 plt.xlabel('Diameter (m)')
-plt.ylabel('Speed (m/s)')
-plt.title('Parachute Diameter vs Touchdown Speed')
+plt.ylabel('Velocity (m/s)')
+plt.title('Parachute Diameter vs Touchdown Velocity')
 plt.plot(diameter_parachute, velocity_f, linestyle='--', marker='.',)
 
 # Parachute Diameter vs Landing Success
@@ -82,6 +82,7 @@ plt.show()
 
 
     
+
 
 
 
