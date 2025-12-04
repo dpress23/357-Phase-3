@@ -1,80 +1,45 @@
-def define_edl_system_1():
-    """
-    Legacy Phase 3 EDL system (not used for Phase 4 race).
-    Kept here in case you still want to compare with your old design.
-    """
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.interpolate import CubicSpline
+from define_experiment import experiment1
 
-    # parachute dict.  Includes physical definition and state information.
-    parachute = {
-        'deployed': True,   # true means it has been deployed but not ejected
-        'ejected': False,   # true means parachute no longer is attached to system
-        'diameter': 16.25,  # [m] (MSL is about 16 m)
-        'Cd': 0.615,        # [-] (0.615 is nominal for subsonic)
-        'mass': 185.0       # [kg] (wild guess -- no data found)
-    }
 
-    # Rocket dict.  This defines a SINGLE rocket.
-    rocket = {
-        'on': False,
-        'structure_mass': 8.0,                 # [kg] everything not fuel
-        'initial_fuel_mass': 230.0,            # [kg]
-        'fuel_mass': 230.0,                    # [kg] current fuel mass (<= initial)
-        'effective_exhaust_velocity': 4500.0,  # [m/s]
-        'max_thrust': 3100.0,                  # [N]
-        'min_thrust': 40.0                     # [N]
-    }
+def alpha_interpolant(alpha_dist, alpha_deg):
+    x = np.asarray(alpha_dist, dtype=float).ravel()
+    y = np.asarray(alpha_deg, dtype=float).ravel()
 
-    speed_control = {
-        'on': False,              # indicates whether control mode is activated
-        'Kp': 2000,               # proportional gain term
-        'Kd': 20,                 # derivative gain term
-        'Ki': 50,                 # integral gain term
-        'target_velocity': -3.0   # [m/s] desired descent speed
-    }
+    if x.ndim != 1 or y.ndim != 1 or x.size != y.size:
+        raise Exception("dist and deg must be equal length and one dimensional")
+    if np.any(np.diff(x) <= 0):
+        raise Exception("dist cannot decrease")
+    if x.size >= 4:
+        cubes = CubicSpline(x, y, bc_type="natural")
+        return cubes
+    else:
+        # Linear interpolation fallback
+        def linear(xq):
+            return np.interp(np.asarray(xq, dtype=float), x, y)
+        return linear
 
-    position_control = {
-        'on': False,             # indicates whether control mode is activated
-        'Kp': 2000,              # proportional gain term
-        'Kd': 1000,              # derivative gain term
-        'Ki': 50,                # integral gain term
-        'target_altitude': 7.6   # [m] needs to reflect the sky crane cable length
-    }
 
-    # This is the part that lowers the rover onto the surface
-    sky_crane = {
-        'on': False,            # true means lowering rover mode
-        'danger_altitude': 4.5, # [m] altitude at which considered too low
-        'danger_speed': -1.0,   # [m/s] speed at which rover would impact too hard
-        'mass': 35.0,           # [kg]
-        'area': 16.0,           # [m^2] frontal area for drag calculations
-        'Cd': 0.9,              # [-] coefficient of drag
-        'max_cable': 7.6,       # [m] max length of cable for lowering rover
-        'velocity': -0.1        # [m/s] speed at which sky crane lowers rover
-    }
+experiment, _end_event = experiment1()
 
-    # Heat shield dict
-    heat_shield = {
-        'ejected': False,  # true means heat shield has been ejected from system
-        'mass': 225.0,     # [kg] mass of heat shield
-        'diameter': 4.5,   # [m]
-        'Cd': 0.35         # [-]
-    }
+x = experiment["alpha_dist"]
+y = experiment["alpha_deg"]
 
-    rover = define_rover()
+func_alpha = alpha_interpolant(x, y)
+x_vals = np.linspace(float(x.min()), float(x.max()), 1000)
+y_vals = func_alpha(x_vals)
 
-    # Pack everything together.
-    edl_system = {
-        'altitude': np.NaN,   # system state variable updated throughout simulation
-        'velocity': np.NaN,   # system state variable updated throughout simulation
-        'num_rockets': 8,     # system level parameter
-        'volume': 150,        # system level parameter
-        'parachute': parachute,
-        'heat_shield': heat_shield,
-        'rocket': rocket,
-        'speed_control': speed_control,
-        'position_control': position_control,
-        'sky_crane': sky_crane,
-        'rover': rover
-    }
 
-    return edl_system
+plt.plot(x_vals, y_vals, label="Terrain angle")
+plt.plot(x, y, "*", ms=7, label="Data points")
+plt.xlabel("Distance [m]")
+plt.ylabel("Terrain angle [deg]")
+plt.title("Terrain angle vs Distance")
+plt.legend()
+
+plt.show()
+
+
+
