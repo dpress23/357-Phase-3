@@ -14,12 +14,15 @@
 import numpy as np
 import pickle
 
+from subfunctions_Phase4 import *
+
+'''
 from define_rovers import *
 from define_edl_system import define_edl_system
 from define_chassis import define_chassis
 from define_motor import define_motor
 from define_batt_pack import define_batt_pack
-
+'''
 
 def define_edl_system_1():
     """
@@ -83,7 +86,7 @@ def define_edl_system_1():
         'Cd': 0.35         # [-]
     }
 
-    rover = define_rover_4()
+    rover = define_rover()
 
     # Pack everything together.
     edl_system = {
@@ -110,7 +113,7 @@ def define_edl_system_1():
 if __name__ == "__main__":
 
     # 1) Start from the official Phase 4 default system
-    edl_system = define_edl_system()
+    edl_system = define_edl_system_1()
 
     # 2) Lock in your discrete design choices
 
@@ -138,8 +141,8 @@ if __name__ == "__main__":
     edl_system['rover']['chassis']['mass'] = 250.0
 
     # 4) Add team information at the TOP level of the dict (required for Phase 4 Section 1.2)
-    edl_system['team_number'] = 22
-    edl_system['team_name'] = "Group 22 Phase 4 Racer"
+    edl_system['team_number'] = 5
+    edl_system['team_name'] = "5 (3) Guys"
 
     # 5) Save to the required .pickle filename
     #    IMPORTANT: replace 'SecYY' with your actual section number (e.g., Sec501).
