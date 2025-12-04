@@ -1,43 +1,33 @@
 import numpy as np
 import pickle
-
 from subfunctions_Phase4 import *
 
-# -------------------------------------------------------------------------
-# Phase 4 race design + pickle export
-# -------------------------------------------------------------------------
 
-
-# 1) Start from the official Phase 4 default system
+# Start from the official Phase 4 default system
 edl_system = define_edl_system()
 
-# 4) Add team information at the TOP level of the dict (required for Phase 4 Section 1.2)
+# team information 
 edl_system['team_number'] = 5
 edl_system['team_name'] = "5 (3) Guys"
 
-# 2) Lock in your discrete design choices
 
-# 2a) Chassis material: 'steel', 'magnesium', or 'carbon'
+#  Chassis material
 edl_system = define_chassis(edl_system, 'carbon')
 
-# 2b) Motor choice: 'base', 'base_he', 'torque', 'torque_he', 'speed', 'speed_he'
+# Motor choice
 edl_system = define_motor(edl_system, 'speed_he')   # racing-oriented choice
 
-# 2c) Battery pack: (battery type, number of modules)
-#    Battery options include 'LiFePO4', 'NiMH', 'NiCD', 'PbAcid-1', 'PbAcid-2', 'PbAcid-3'
+# Battery pack
 edl_system = define_batt_pack(edl_system, 'LiFePO4', 10)
 
-# 3) Set your continuous design variables (within your narrowed ranges)
-
-# 3a) Parachute diameter: target ~16.5 m in [16.0, 17.5]
-#     Try Phase 4 structure first; fall back to old top-level structure if needed.
+# Parachute diameter
 edl_system['parachute']['diameter'] = 16.5
 
-# 3b) Chassis mass: 250–415 kg, choose 250 kg for light, strong carbon fiber chassis
+# Chassis mass
 edl_system['rover']['chassis']['mass'] = 250.0
 
 
-# 5) Save to the required .pickle filename
+# Create the  .pickle file
 filename = "FA25_Sec504_Team05.pickle"  
 
 with open(filename, "wb") as f:
